@@ -121,10 +121,32 @@ exports.getUserDetails = (req, res) => {
     .then((doc) => {
       if (doc.exists) {
         userData.user = doc.data();
-        return res.json(userData);
+        return db
+          .collection("requests")
+          .where("userHandle", "==", req.params.handle)
+          .orderBy("createdAt", "desc")
+          .get();
       } else {
         return res.status(404).json({ errror: "User not found" });
       }
+    })
+    .then((data) => {
+      userData.requests = [];
+      data.forEach((doc) => {
+        userData.requests.push({
+          description: doc.data().description,
+          createdAt: doc.data().createdAt,
+          userHandle: doc.data().userHandle,
+          requestImage: doc.data().requestImage,
+          offerCount: doc.data().offerCount,
+          offerAccepted: doc.data().offerAccepted,
+          car: doc.data().car,
+          make: doc.data().make,
+          type: doc.data().type,
+          requestId: doc.id,
+        });
+      });
+      return res.json(userData);
     })
     .catch((err) => {
       console.error(err);
@@ -139,8 +161,32 @@ exports.getAuthenticatedUser = (req, res) => {
     .then((doc) => {
       if (doc.exists) {
         userData.credentials = doc.data();
-        return res.json(userData);
+        return db
+          .collection("requests")
+          .where("userHandle", "==", req.user.handle)
+          .orderBy("createdAt", "desc")
+          .get();
+      } else {
+        return res.status(404).json({ errror: "User not found" });
       }
+    })
+    .then((data) => {
+      userData.requests = [];
+      data.forEach((doc) => {
+        userData.requests.push({
+          description: doc.data().description,
+          createdAt: doc.data().createdAt,
+          userHandle: doc.data().userHandle,
+          requestImage: doc.data().requestImage,
+          offerCount: doc.data().offerCount,
+          offerAccepted: doc.data().offerAccepted,
+          car: doc.data().car,
+          make: doc.data().make,
+          type: doc.data().type,
+          requestId: doc.id,
+        });
+      });
+      return res.json(userData);
     })
     .catch((err) => {
       console.error(err);
@@ -153,7 +199,7 @@ exports.uploadImage = (req, res) => {
   const path = require("path");
   const os = require("os");
   const fs = require("fs");
-
+  console.log("Start");
   const busboy = new BusBoy({ headers: req.headers });
 
   let imageToBeUploaded = {};
@@ -173,6 +219,7 @@ exports.uploadImage = (req, res) => {
       Math.random() * 1000000000000
     ).toString()}.${imageExtension}`;
     const filepath = path.join(os.tmpdir(), imageFileName);
+
     imageToBeUploaded = { filepath, mimetype };
     file.pipe(fs.createWriteStream(filepath));
   });
