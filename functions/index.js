@@ -7,7 +7,14 @@ app.use(cors());
 
 const { db } = require("./util/admin");
 
-const { postRequest } = require("./handlers/requests");
+const {
+  postRequest,
+  getAllRequests,
+  offerOnRequest,
+  getOffers,
+  getUserOffers,
+  acceptOffer,
+} = require("./handlers/requests");
 const {
   signup,
   login,
@@ -27,8 +34,12 @@ app.get("/scream/:screamId/like", FBAuth, likeScream);
 app.get("/scream/:screamId/unlike", FBAuth, unlikeScream);
 app.post("/scream/:screamId/comment", FBAuth, commentOnScream); */
 
+app.get("/requests", getAllRequests);
 app.post("/request", FBAuth, postRequest);
-
+app.post("/request/:requestId/offer", FBAuth, offerOnRequest);
+app.get("/offers/:requestId", FBAuth, getOffers);
+app.post("/requests/:requestId/:offerId/accept", FBAuth, acceptOffer);
+app.get("/user/offers", FBAuth, getUserOffers);
 // users routes
 app.post("/signup", signup);
 app.post("/login", login);

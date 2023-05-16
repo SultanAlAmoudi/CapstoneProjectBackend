@@ -49,13 +49,13 @@ exports.validatePostRequestData = (data) => {
     errors.description = "Must not be empty";
   }
   if (isEmpty(data.car)) {
-    errors.car = "Must not be empty";
+    errors.car = "Must choose a car";
   }
   if (isEmpty(data.make)) {
-    errors.make = "Must not be empty";
+    errors.make = "Must choose a brand";
   }
   if (isEmpty(data.type)) {
-    errors.type = "Must not be empty";
+    errors.type = "Must choose a job type";
   }
 
   return {
